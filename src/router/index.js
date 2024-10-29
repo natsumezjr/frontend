@@ -6,6 +6,7 @@ import LoginPage from '@/views/auth/LoginPage.vue'
 import RegisterPage from '@/views/auth/RegisterPage.vue'
 import StudentPage from '@/views/dashboard/StudentPage.vue'
 import ProfilePage from '@/views/dashboard/ProfilePage.vue'
+import TeacherPage from '@/views/dashboard/TeacherPage.vue'
 
 const routes = [
     {
@@ -32,6 +33,11 @@ const routes = [
         path: '/profile',
         name: 'profile',
         component: ProfilePage
+    },
+    {
+        path: '/teacher',
+        name: 'teacher',
+        component: TeacherPage
     },
     // {
     //     path: '/:pathMatch(.*)*',

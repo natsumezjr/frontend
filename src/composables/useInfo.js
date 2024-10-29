@@ -1,62 +1,80 @@
 // src/composables/useInfo.js
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores';
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 
-const URL = 'http://localhost:18000/';
-const API_URL = `${URL}dashboard/`;
+const BASE_URL = 'http://localhost:18000/';
+const API_URL = `${BASE_URL}dashboard/`
 
 export const useInfo = () => {
-    const router = useRouter();
-    const userStore = useUserStore();
-    const csrftoken = ref('');
-
     // 获取 CSRF 令牌的函数
     const getCSRFToken = async () => {
         try {
-            const res = await axios.get(`${URL}csrf/`, { withCredentials: true });
-            csrftoken.value = res.data.csrftoken;
+            const res = await axios.get(`${BASE_URL}csrf/`, { withCredentials: true });
+            return res.data.csrftoken;
         } catch (error) {
-            console.error('获取 CSRF 令牌失败：', error);
             ElMessage.error('获取 CSRF 令牌失败');
+            console.error('获取 CSRF 令牌失败：', error);
+            return null; // 返回 null 以便在调用时进行判断
         }
     };
 
+    // 获取用户信息
     const fetchUserInfo = async (userData, form, defaultAvatarUrl) => {
+        const token = await getCSRFToken();
+        if (!token) return;
+
         try {
-            await getCSRFToken();
             const res = await axios.post(`${API_URL}userinfo/`, {}, {
-                headers: {
-                    'X-CSRFToken': csrftoken.value,
-                },
+                headers: { 'X-CSRFToken': token },
                 withCredentials: true,
             });
             if (res.data) {
-                userData.value = {   // 更新用户数据
-                    username: res.data.data.username,
-                    avatar: res.data.data.avatar || defaultAvatarUrl,
-                    first_name: res.data.data.first_name,
-                    last_name: res.data.data.last_name,
-                    userId: res.data.data.userId,
-                    phone: res.data.data.phone,
-                    email: res.data.data.email,
-                  };
-                  form.value = {      // 更新表单数据
-                    first_name: res.data.data.first_name,
-                    last_name: res.data.data.last_name,
-                    userId: res.data.data.userId,
-                    phone: res.data.data.phone,
-                    email: res.data.data.email,
-                  };
-                  console.log('用户信息更新成功:', userData.value);
+                const userInfo = res.data.data;
+                userData.value = {
+                    username: userInfo.username,
+                    avatar: userInfo.avatar || defaultAvatarUrl,
+                    first_name: userInfo.first_name,
+                    last_name: userInfo.last_name,
+                    userId: userInfo.userId,
+                    phone: userInfo.phone,
+                    email: userInfo.email,
+                };
+                Object.assign(form.value, userData.value); // 更新表单数据
+                console.log('用户信息更新成功:', userData.value);
             }
         } catch (error) {
+            ElMessage.error('获取用户信息失败');
             console.error('获取用户信息失败:', error);
+        }
+    };
+
+    // 提交用户信息表单
+    const updateUserInfo = async (form) => {
+        const token = await getCSRFToken();
+        if (!token) return;
+
+        const formData = new URLSearchParams();
+        Object.keys(form.value).forEach(key => {
+            formData.append(key, form.value[key]);
+        });
+
+        try {
+            const res = await axios.post(`${API_URL}userinfo/update/`, formData, {
+                headers: { 'X-CSRFToken': token },
+                withCredentials: true,
+            });
+            console.log('用户信息更新结果:', res.data.code);
+            if (res.data.code === 201) {
+                ElMessage.success('信息更新成功');
+            }
+        } catch (error) {
+            ElMessage.error('信息更新失败');
+            console.error('信息更新失败:', error);
         }
     };
 
     return {
         fetchUserInfo,
+        updateUserInfo,
     };
-}
+};

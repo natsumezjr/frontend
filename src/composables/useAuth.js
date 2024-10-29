@@ -12,16 +12,16 @@ const API_URL = `${URL}users/`;
 export const useAuth = () => {
   const router = useRouter();
   const store = useUserStore();
-  const csrftoken = ref('');
 
   // 获取 CSRF 令牌的函数
   const getCSRFToken = async () => {
     try {
         const res = await axios.get(`${URL}csrf/`, { withCredentials: true });
-        csrftoken.value = res.data.csrftoken;
+        return res.data.csrftoken;
     } catch (error) {
         console.error('获取 CSRF 令牌失败：', error);
         ElMessage.error('获取 CSRF 令牌失败');
+        return null;
     }
   };
 
@@ -40,7 +40,9 @@ export const useAuth = () => {
 
     // 继续执行注册的 API 调用...
     try {
-      await getCSRFToken();
+      const csrftoken = await getCSRFToken();
+      if (!token) return false; // 获取 CSRF 令牌失败，注册失败
+
       const formData = new URLSearchParams();
       formData.append('username', form.username);
       formData.append('password', form.password);
@@ -49,7 +51,7 @@ export const useAuth = () => {
 
       const res = await axios.post(`${API_URL}register/`, formData, {
         headers: {
-          'X-CSRFToken': csrftoken.value,
+          'X-CSRFToken': csrftoken,
         },
         withCredentials: true,
       });
@@ -83,7 +85,7 @@ export const useAuth = () => {
 
     // 继续执行登录的 API 调用...
     try {
-      await getCSRFToken();
+      const csrftoken = await getCSRFToken();
       const formData = new URLSearchParams();
       formData.append('username', form.username);
       formData.append('password', form.password);
@@ -91,7 +93,7 @@ export const useAuth = () => {
 
       const res = await axios.post(`${API_URL}login/`, formData, {
         headers: {
-          'X-CSRFToken': csrftoken.value,
+          'X-CSRFToken': csrftoken,
         },
         withCredentials: true,
       });
@@ -113,14 +115,14 @@ export const useAuth = () => {
 
   // 退出登录函数
   const logout = async () => {
-    await getCSRFToken(); // 获取 CSRF 令牌
+    const csrftoken = await getCSRFToken(); // 获取 CSRF 令牌
     store.clearUser(); // 清除用户状态
     
     try {
       // 发送登出请求
       const res = await axios.post(`${API_URL}logout/`, null, {
         headers: {
-          'X-CSRFToken': csrftoken.value, // 在请求头中添加 CSRF 令牌
+          'X-CSRFToken': csrftoken, // 在请求头中添加 CSRF 令牌
         },
         withCredentials: true,
       });

@@ -34,14 +34,12 @@
                   <el-input
                     v-model="form.first_name"
                     :disabled="!editMode"
-                    placeholder="名字"
                   />
                 </el-col>
                 <el-col :span="12">
                   <el-input
                     v-model="form.last_name"
                     :disabled="!editMode"
-                    placeholder="姓氏"
                   />
                 </el-col>
               </el-row>
@@ -52,31 +50,31 @@
               <el-input
                 v-model="form.userId"
                 :disabled="!editMode"
-                placeholder="请输入学/教工号"
               />
             </el-form-item>
 
             <!-- 电话 -->
             <el-form-item label="电话">
               <el-input
+                type="tel"
                 v-model="form.phone"
                 :disabled="!editMode"
-                placeholder="请输入电话"
               />
             </el-form-item>
 
             <!-- 邮箱 -->
             <el-form-item label="邮箱">
               <el-input
+                type="email"
                 v-model="form.email"
                 :disabled="!editMode"
-                placeholder="请输入邮箱"
               />
             </el-form-item>
 
             <!-- 保存按钮 -->
             <el-form-item>
               <el-button
+                :loading="loading"
                 type="primary"
                 @click="submitForm"
                 :disabled="!editMode"
@@ -96,7 +94,8 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import NavBar from '@/components/NavBar.vue';
 import { useInfo } from '@/composables/useInfo';
-const { fetchUserInfo } = useInfo();
+
+const { fetchUserInfo, updateUserInfo } = useInfo();
 
 const editMode = ref(false); // 控制是否处于编辑模式
 const userData = ref({
@@ -108,47 +107,37 @@ const userData = ref({
   phone: '',
   email: '',
 });
+const loading = ref(false);
 
-const defaultAvatarUrl = new URL('@/assets/default_avatar.png', import.meta.url).href; 
+const defaultAvatarUrl = new URL('@/assets/default_avatar.png', import.meta.url).href;
 
-const form = ref({
-  first_name: '',
-  last_name: '',
-  userId: '',
-  phone: '',
-  email: '',
-});
+const form = ref({ ...userData.value }); // 初始化表单数据
 
 // 处理头像上传成功
 const handleAvatarSuccess = response => {
   if (response.success && response.avatarUrl) {
-    userData.value.avatar = response.avatarUrl; // 更新头像 URL
-    submitAvatarUpdate(); // 将头像 URL 提交到后端
+    userData.value.avatar = response.avatarUrl; 
+    submitAvatarUpdate(); 
   } else {
-    console.error('头像上传失败');
+    alert('头像上传失败');
   }
 };
 
 // 上传前处理逻辑
 const beforeAvatarUpload = file => {
-  const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
+  const isAllowedType = ['image/jpeg', 'image/png'].includes(file.type);
   const isLt2M = file.size / 1024 / 1024 < 2;
 
-  if (!isJPG) {
-    alert('上传头像图片只能是 JPG/PNG 格式!');
-  }
-  if (!isLt2M) {
-    alert('上传头像图片大小不能超过 2MB!');
-  }
-  return isJPG && isLt2M;
+  if (!isAllowedType) alert('上传头像图片只能是 JPG/PNG 格式!');
+  if (!isLt2M) alert('上传头像图片大小不能超过 2MB!');
+
+  return isAllowedType && isLt2M;
 };
 
 // 提交头像更新
 const submitAvatarUpdate = async () => {
   try {
-    await axios.post('/api/update-avatar', {
-      avatar: userData.value.avatar,
-    }, { withCredentials: true });
+    await axios.post('/api/update-avatar', { avatar: userData.value.avatar }, { withCredentials: true });
     alert('头像更新成功');
   } catch (error) {
     alert('头像更新失败');
@@ -156,18 +145,16 @@ const submitAvatarUpdate = async () => {
   }
 };
 
-// 提交用户信息表单
+// 更新用户信息
 const submitForm = async () => {
   try {
-    await axios.post('/api/update-user-info', form.value, {
-      withCredentials: true,
-    });
-    alert('信息更新成功');
-    editMode.value = false; // 退出编辑模式
-    await fetchUserInfo(userData, form, defaultAvatarUrl); // 刷新用户信息
+    loading.value = true;
+    await updateUserInfo(form);
+    await fetchUserInfo(userData, form, defaultAvatarUrl); // 更新用户信息
+    editMode.value = false;
+    loading.value = false;
   } catch (error) {
-    alert('信息更新失败');
-    console.error('信息更新失败:', error);
+    console.error('资料更新失败:', error);
   }
 };
 
@@ -176,6 +163,8 @@ onMounted(() => {
   fetchUserInfo(userData, form, defaultAvatarUrl); // 获取用户信息
 });
 </script>
+
+
 
 <style scoped>
 .profile-container {

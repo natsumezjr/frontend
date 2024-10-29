@@ -104,7 +104,12 @@ const goToLogin = () => navigateTo('/login');
 const goToHome = () => navigateTo('/');
 const goToCompetition = () => {
   if (isLoggedIn.value) {
-    navigateTo('/student');
+    if (store.identity === 'student') {
+      navigateTo('/student');
+    }
+    else if (store.identity === 'teacher') {
+      navigateTo('/teacher');
+    }
   } else {
     ElMessage.error('请先登录');
     navigateTo('/login');
