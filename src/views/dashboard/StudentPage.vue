@@ -16,8 +16,8 @@
           <h2>竞赛报备</h2>
           <el-button type="primary" @click="showReportDialog">创建报备</el-button>
           <div>
-            <el-collapse>
-              <el-collapse-item title="待报备 (Pending)" name="pending_report">
+            <el-collapse v-model="activeNamesReport">
+              <el-collapse-item title="待审核 (Pending)" name="pending_report">
                 <el-table v-if="filteredReports.pending.length" :data="filteredReports.pending" style="width: 100%">
                   <el-table-column prop="name" label="比赛名"></el-table-column>
                   <el-table-column prop="competition_start" label="比赛开始时间"></el-table-column>
@@ -52,14 +52,14 @@
             </el-collapse>
           </div>
         </div>
-        
+
         <!-- 竞赛记录 -->
         <div v-if="activeTab === '2'" class="right-col">
           <h2>竞赛记录</h2>
           <div class="total-participation">
             <span>竞赛总参与数: {{ totalParticipationCount }}</span>
           </div>
-          <el-collapse>
+          <el-collapse v-model="activeNamesRecord">
             <el-collapse-item title="记录待上传 (Waiting)" name="waiting_record">
               <el-table v-if="filteredRecords.waiting.length" :data="filteredRecords.waiting" style="width: 100%">
                 <el-table-column prop="name" label="比赛名"></el-table-column>
@@ -129,7 +129,6 @@
             </el-collapse-item>
           </el-collapse>
         </div>
-
       </el-col>
     </el-row>
 
@@ -245,6 +244,9 @@ const dateRange = ref([]); // 用于存储选择的日期范围
 
 const reports = ref([]); // 报备列表
 const records = ref([]); // 记录列表
+
+const activeNamesReport = ['pending_report', 'rejected_report', 'approved_report']; // 竞赛报备默认展开的面板
+const activeNamesRecord = ['waiting_record', 'pending_record', 'approved_record', 'rejected_record']; // 竞赛记录默认展开的面板
 
 const newReport = ref({
   name: "",

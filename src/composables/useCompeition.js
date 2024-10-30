@@ -29,7 +29,7 @@ export const useCompeition = () => {
         });
         reports.value = res.data.data;
     } catch (error) {
-      ElMessage.error("获取报备列表失败!");
+      // ElMessage.error("获取报备记录列表失败!");
     }
   };
   
@@ -45,7 +45,7 @@ export const useCompeition = () => {
         });
         records.value = res.data.data;
     } catch (error) {
-      ElMessage.error("获取记录列表失败!");
+      // ElMessage.error("获取记录列表失败!");
     }
   };
   
@@ -91,11 +91,15 @@ export const useCompeition = () => {
   // 审核通过记录
   const approveRecord = async (ReportID) => {
     try {
-      await axios.post(
-        `http://localhost:8000/Teacher/record/approve/${ReportID}/`,
-        {},
-        { withCredentials: true }
-      );
+      const csrftoken = await getCSRFToken();
+          const res = await axios.post(`${BASE_URL}records/approve/`, 
+            { ReportID },
+            {
+            headers: {
+              'X-CSRFToken': csrftoken,
+            },
+            withCredentials: true,
+          });
       ElMessage.success("记录审核通过!");
       await getRecords();
     } catch (error) {
@@ -106,11 +110,15 @@ export const useCompeition = () => {
   // 审核拒绝记录
   const rejectRecord = async (ReportID) => {
     try {
-      await axios.post(
-        `http://localhost:8000/Teacher/record/reject/${ReportID}/`,
-        {},
-        { withCredentials: true }
-      );
+      const csrftoken = await getCSRFToken();
+      const res = await axios.post(`${BASE_URL}records/reject/`, 
+        { ReportID },
+        {
+        headers: {
+          'X-CSRFToken': csrftoken,
+        },
+        withCredentials: true,
+      });
       ElMessage.success("记录审核拒绝!");
       await getRecords();
     } catch (error) {
@@ -123,5 +131,7 @@ export const useCompeition = () => {
     getRecords,
     approveReport,
     rejectReport,
+    approveRecord,
+    rejectRecord,
   };
 };
