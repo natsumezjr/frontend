@@ -61,7 +61,7 @@
                 <el-button-group>
                   <el-button
                     type="primary"
-                    @click="showRecordDialog(row.RecordID)"
+                    @click="showRecordDialog(row.ReportID)"
                     >上传记录
                   </el-button>
                 </el-button-group>
@@ -221,7 +221,9 @@
 import { ref, onMounted, computed } from "vue";
 import { ElMessage } from "element-plus";
 import axios from "axios";
-import NavBar from "../../components/NavBar.vue";
+import NavBar from "@/components/NavBar.vue";
+import { useCompeition } from "../../composables/useCompeition";
+const { getRecords, getReports } = useCompeition();
 
 // API URL
 const API_URL = "http://localhost:18000/dashboard/";
@@ -232,7 +234,7 @@ const reportDialogVisible = ref(false);
 const recordDialogVisible = ref(false);
 const dateRange = ref([]); // 用于存储选择的日期范围
 
-const reports = ref([]); // 报告列表
+const reports = ref([]); // 报备列表
 const records = ref([]); // 记录列表
 
 const newReport = ref({
@@ -284,20 +286,6 @@ const sortedReports = computed(() => {
   });
 });
 
-// 获取报备记录列表
-const getReports = async () => {
-  try {
-    const res = await axios.post(`${API_URL}reports/`, {}, { 
-      withCredentials: true,
-      headers: {
-          'X-CSRFToken': csrftoken.value // 添加 CSRF 令牌
-      }
-    });
-    reports.value = res.data.data;
-  } catch (error) {
-    ElMessage.error("获取报备列表失败!");
-  }
-};
 
 // 将创建报备中输入的比赛时间范围转化为开始时间和结束时间
 const handleDateChange = (value) => {
@@ -309,24 +297,6 @@ const totalParticipationCount = computed(() => {
   return records.value.length; // 计算记录的总数
 });
 
-// 获取竞赛记录列表
-const getRecords = async () => {
-  try {
-    const res = await axios.post(
-      `${API_URL}records/`,
-      {},
-      {
-        withCredentials: true,
-        headers: {
-            'X-CSRFToken': csrftoken.value // 添加 CSRF 令牌
-        }
-      }
-    );
-    records.value = res.data.data;
-  } catch (error) {
-    ElMessage.error("获取竞赛记录失败!");
-  }
-};
 
 // 显示创建报备弹窗
 const showReportDialog = () => {
@@ -354,7 +324,7 @@ const showRecordDialog = (ReportID) => {
   recordDialogVisible.value = true;
   resetNewRecord();
   newRecord.value.ReportID = ReportID; // 记录当前项的 ID
-  getRecords(); // 继续进行您的后续操作
+  getRecords( records ); // 继续进行您的后续操作
 };
 
 // 重置创建记录表单
@@ -429,7 +399,7 @@ const submitReport = async () => {
     
     if (res.status === 201) {
       resetNewReport();
-      await getReports();
+      await getReports( reports );
       ElMessage.success("报备成功!");
       reportDialogVisible.value = false;
     }
@@ -496,6 +466,7 @@ const submitRecord = async () => {
   
   const formData = new FormData();
   formData.append("summary", newRecord.value.summary);
+  console.log(newRecord.value.reimbursement);
   formData.append("reimbursement", newRecord.value.reimbursement.toString());
   formData.append("ReportID", newRecord.value.ReportID);
 
@@ -529,7 +500,7 @@ const submitRecord = async () => {
 
     if (res.status === 201) {
       resetNewRecord();
-      await getRecords();
+      await getRecords( records );
       ElMessage.success("上传记录成功!");
       reportDialogVisible.value = false;
     }
@@ -546,18 +517,18 @@ const submitRecord = async () => {
 const handleSelect = (index) => {
   activeTab.value = index;
   if (index === "1") {
-    getReports();
+    getReports( reports );
   }
   if (index === "2") {
-    getRecords();
+    getRecords( records );
   }
 };
 
 // 页面加载完成后执行
 onMounted(async () => {
   await getCSRFToken(); // 获取 CSRF 令牌
-  getReports();
-  getRecords();
+  getReports( reports );
+  getRecords( records );
 });
 </script>
 

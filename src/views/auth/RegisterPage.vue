@@ -77,7 +77,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useAuth } from '@/composables/useAuth';
+import { useAuth } from '../../composables/useAuth';
 import NavBar from '@/components/NavBar.vue';
 
 // 定义表单数据
@@ -104,6 +104,7 @@ const { register } = useAuth();
 
 // 注册处理函数
 const handleRegister = async () => {
+  console.log("register:", form.value);
   loading.value = true;
   const success = await register(form.value);
   loading.value = false;

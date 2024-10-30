@@ -1,5 +1,4 @@
 // src/composables/useAuth.js
-import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores';
 import axios from 'axios';
@@ -41,13 +40,13 @@ export const useAuth = () => {
     // 继续执行注册的 API 调用...
     try {
       const csrftoken = await getCSRFToken();
-      if (!token) return false; // 获取 CSRF 令牌失败，注册失败
 
       const formData = new URLSearchParams();
       formData.append('username', form.username);
       formData.append('password', form.password);
       formData.append('email', form.email);
       formData.append('identity', form.identity);
+      console.log(formData);
 
       const res = await axios.post(`${API_URL}register/`, formData, {
         headers: {

@@ -29,8 +29,8 @@
               <el-table-column label="操作" align="center">
                 <template #default="{ row }">
                   <el-button-group>
-                    <el-button type="primary" size="small" @click="approveReport(row.id)">通过</el-button>
-                    <el-button type="danger" size="small" @click="rejectReport(row.id)">拒绝</el-button>
+                    <el-button type="primary" size="small" @click="approveReport(row.ReportID)">通过</el-button>
+                    <el-button type="danger" size="small" @click="rejectReport(row.ReportID)">拒绝</el-button>
                     <el-button type="info" size="small" @click="showReportDetails(row)">详情</el-button>
                   </el-button-group>
                 </template>
@@ -54,8 +54,8 @@
               <el-table-column label="操作" align="center">
                 <template #default="{ row }">
                   <el-button-group>
-                    <el-button type="primary" size="small" @click="approveRecord(row.id)">通过</el-button>
-                    <el-button type="danger" size="small" @click="rejectRecord(row.id)">拒绝</el-button>
+                    <el-button type="primary" size="small" @click="approveRecord(row.ReportID)">通过</el-button>
+                    <el-button type="danger" size="small" @click="rejectRecord(row.ReportID)">拒绝</el-button>
                     <el-button type="info" size="small" @click="showRecordDetails(row)">详情</el-button>
                   </el-button-group>
                 </template>
@@ -121,73 +121,31 @@
   </template>
   
   <script setup>
-  import NavBar from "@/components/NavBar.vue";
+  import NavBar from "../../components/NavBar.vue";
   import { ref, onMounted, computed } from "vue";
   import axios from "axios";
   import { ElMessage } from "element-plus";
+  import { useCompeition } from "../../composables/useCompeition";
+  const { getReports, getRecords, approveReport, rejectReport } = useCompeition();
   
   // 响应式数据
   const activeTab = ref("1");
   const searchQuery = ref("");
-  const reportList = ref([]);
-  const recordList = ref([]);
+  const reports = ref([]);
+  const records = ref([]);
   const reportDialogVisible = ref(false);
   const recordDialogVisible = ref(false);
   const selectedReport = ref({});
   const selectedRecord = ref({});
   
-  // 获取报备记录列表
-  const getReports = async () => {
-    try {
-      const res = await axios.get("http://localhost:8000/Teacher/report/list/", {
-        withCredentials: true,
-      });
-      reportList.value = res.data.data;
-    } catch (error) {
-      ElMessage.error("获取报备列表失败!");
-    }
+  // 获取报备
+  const handlegetReports = async () => {
+    await getReports( reports );
   };
-  
-  // 获取记录列表
-  const getRecords = async () => {
-    try {
-      const res = await axios.get("http://localhost:8000/Teacher/record/list/", {
-        withCredentials: true,
-      });
-      recordList.value = res.data.data;
-    } catch (error) {
-      ElMessage.error("获取记录列表失败!");
-    }
-  };
-  
-  // 审核通过报备
-  const approveReport = async (id) => {
-    try {
-      await axios.post(
-        `http://localhost:8000/Teacher/report/approve/${id}/`,
-        {},
-        { withCredentials: true }
-      );
-      ElMessage.success("报备审核通过!");
-      await getReports();
-    } catch (error) {
-      ElMessage.error("审核失败!");
-    }
-  };
-  
-  // 审核拒绝报备
-  const rejectReport = async (id) => {
-    try {
-      await axios.post(
-        `http://localhost:8000/Teacher/report/reject/${id}/`,
-        {},
-        { withCredentials: true }
-      );
-      ElMessage.success("报备审核拒绝!");
-      await getReports();
-    } catch (error) {
-      ElMessage.error("审核失败!");
-    }
+
+  // 获取记录
+  const handlegetRecords = async () => {
+    await getRecords( records );
   };
   
   // 审核通过记录
@@ -244,7 +202,7 @@
   
   // 计算过滤后的报备记录
   const filteredReports = computed(() => {
-    return reportList.value.filter(
+    return reports.value.filter(
       (report) =>
         report.name.includes(searchQuery.value) ||
         report.student_name.includes(searchQuery.value) ||
@@ -255,7 +213,7 @@
   
   // 计算过滤后的记录
   const filteredRecords = computed(() => {
-    return recordList.value.filter(
+    return records.value.filter(
       (record) =>
         record.name.includes(searchQuery.value) ||
         record.student_name.includes(searchQuery.value) ||
@@ -266,8 +224,8 @@
   
   // 页面加载完成后执行
   onMounted(() => {
-    getReports();
-    getRecords();
+    handlegetReports();
+    handlegetRecords();
   });
   </script>
   

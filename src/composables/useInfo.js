@@ -29,15 +29,15 @@ export const useInfo = () => {
                 withCredentials: true,
             });
             if (res.data) {
-                const userInfo = res.data.data;
+                const { username, avatar, first_name, last_name, userId, phone, email } = res.data.data;
                 userData.value = {
-                    username: userInfo.username,
-                    avatar: userInfo.avatar || defaultAvatarUrl,
-                    first_name: userInfo.first_name,
-                    last_name: userInfo.last_name,
-                    userId: userInfo.userId,
-                    phone: userInfo.phone,
-                    email: userInfo.email,
+                    username,
+                    avatar: avatar || defaultAvatarUrl,
+                    first_name,
+                    last_name,
+                    userId,
+                    phone,
+                    email,
                 };
                 Object.assign(form.value, userData.value); // 更新表单数据
                 console.log('用户信息更新成功:', userData.value);
