@@ -59,20 +59,77 @@
           <div class="total-participation">
             <span>竞赛总参与数: {{ totalParticipationCount }}</span>
           </div>
-          <el-table :data="records">
-            <el-table-column prop="name" label="比赛名"></el-table-column>
-            <el-table-column prop="level" label="比赛级别"></el-table-column>
-            <el-table-column prop="report_date" label="提交时间"></el-table-column>
-            <el-table-column prop="status" label="审核状态"></el-table-column>
-            <el-table-column label="操作" align="center">
-              <template #default="{ row }">
-                <el-button-group>
-                  <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
-                </el-button-group>
-              </template>
-            </el-table-column>
-          </el-table>
+          <el-collapse>
+            <el-collapse-item title="记录待上传 (Waiting)" name="waiting_record">
+              <el-table v-if="filteredRecords.waiting.length" :data="filteredRecords.waiting" style="width: 100%">
+                <el-table-column prop="name" label="比赛名"></el-table-column>
+                <el-table-column prop="level" label="比赛级别"></el-table-column>
+                <el-table-column prop="report_date" label="提交时间"></el-table-column>
+                <el-table-column prop="status" label="审核状态"></el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template #default="{ row }">
+                    <el-button-group>
+                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
+                    </el-button-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div v-else>无待上传的记录</div>
+            </el-collapse-item>
+
+            <el-collapse-item title="待审核 (Pending)" name="pending_record">
+              <el-table v-if="filteredRecords.pending.length" :data="filteredRecords.pending" style="width: 100%">
+                <el-table-column prop="name" label="比赛名"></el-table-column>
+                <el-table-column prop="level" label="比赛级别"></el-table-column>
+                <el-table-column prop="report_date" label="提交时间"></el-table-column>
+                <el-table-column prop="status" label="审核状态"></el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template #default="{ row }">
+                    <el-button-group>
+                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
+                    </el-button-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div v-else>无待审核记录</div>
+            </el-collapse-item>
+
+            <el-collapse-item title="已批准 (Approved)" name="approved_record">
+              <el-table v-if="filteredRecords.approved.length" :data="filteredRecords.approved" style="width: 100%">
+                <el-table-column prop="name" label="比赛名"></el-table-column>
+                <el-table-column prop="level" label="比赛级别"></el-table-column>
+                <el-table-column prop="report_date" label="提交时间"></el-table-column>
+                <el-table-column prop="status" label="审核状态"></el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template #default="{ row }">
+                    <el-button-group>
+                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
+                    </el-button-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div v-else>无已批准记录</div>
+            </el-collapse-item>
+
+            <el-collapse-item title="已拒绝 (Rejected)" name="rejected_record">
+              <el-table v-if="filteredRecords.rejected.length" :data="filteredRecords.rejected" style="width: 100%">
+                <el-table-column prop="name" label="比赛名"></el-table-column>
+                <el-table-column prop="level" label="比赛级别"></el-table-column>
+                <el-table-column prop="report_date" label="提交时间"></el-table-column>
+                <el-table-column prop="status" label="审核状态"></el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template #default="{ row }">
+                    <el-button-group>
+                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
+                    </el-button-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div v-else>无已拒绝记录</div>
+            </el-collapse-item>
+          </el-collapse>
         </div>
+
       </el-col>
     </el-row>
 
@@ -246,6 +303,16 @@ const filteredReports = computed(() => {
     approved: sortedReports.value.filter(item => item.status === 'approved_report'),
   };
 });
+
+const filteredRecords = computed(() => {
+  return {
+    waiting: records.value.filter(item => item.status === 'approved_report'),
+    pending: records.value.filter(item => item.status === 'pending_record'),
+    rejected: records.value.filter(item => item.status === 'rejected_record'),
+    approved: records.value.filter(item => item.status === 'approved_record'),
+  };
+});
+
 
 
 // 将创建报备中输入的比赛时间范围转化为开始时间和结束时间
