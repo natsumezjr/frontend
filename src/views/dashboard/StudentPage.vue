@@ -541,6 +541,27 @@ const submitRecord = async () => {
   }
 };
 
+const generatepdf = async (ReportID) => {
+  try {
+    const res = await axios.post(
+      `${API_URL}records/generatepdf/`,
+      { ReportID: ReportID },
+      {
+        withCredentials: true, // 添加 withCredentials
+        headers: {
+          'X-CSRFToken': csrftoken.value // 添加 CSRF 令牌
+        },
+      }
+    );
+    if (res.status === 200) {
+      ElMessage.success("生成PDF成功");
+    }
+  } catch (error) {
+    ElMessage.error(error.response?.data?.error || "生成PDF失败，请稍后再试")
+  }
+}
+
+
 // 监听 Tab 切换
 const handleSelect = (index) => {
   activeTab.value = index;
