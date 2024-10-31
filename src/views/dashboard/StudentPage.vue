@@ -175,7 +175,7 @@
     <el-dialog title="上传竞赛记录" v-model="recordDialogVisible" width="45%">
       <el-form ref="recordForm" :model="newRecord" label-width="120px">
         <el-form-item label="比赛照片">
-          <el-upload :on-change="handleImageChange" :on-remove="handleRemove" :show-file-list="true" :file-list="newRecord.photos" :auto-upload="false" :limit="3" accept="image/*">
+          <el-upload :on-change="handleImageChange" :on-remove="handleRemove" :show-file-list="true" :file-list="formattedFileList(newRecord.photos)" :auto-upload="false" :limit="3" accept="image/*" :before-upload="beforeUpload">
             <template #trigger>
               <el-button type="primary">选择图片</el-button>
             </template>
@@ -191,7 +191,7 @@
         </el-form-item>
 
         <el-form-item label="成绩证明">
-          <el-upload :on-change="handleCaChange" :on-remove="handleCaRemove" :show-file-list="true" :file-list="newRecord.certificates" :auto-upload="false" :limit="1" accept="image/*">
+          <el-upload :on-change="handleCaChange" :on-remove="handleCaRemove" :show-file-list="true" :file-list="formattedFileList(newRecord.certificates)" :auto-upload="false" :limit="1" accept="image/*" :before-upload="beforeUpload">
             <template #trigger>
               <el-button type="primary">选择图片</el-button>
             </template>
@@ -206,7 +206,7 @@
         </el-form-item>
 
         <el-form-item label="报销凭证">
-          <el-upload :on-change="handlePrChange" :on-remove="handlePrRemove" :show-file-list="true" :file-list="newRecord.proof" :auto-upload="false" :limit="3" accept="image/*">
+          <el-upload :on-change="handlePrChange" :on-remove="handlePrRemove" :show-file-list="true" :file-list="formattedFileList(newRecord.proof)" :auto-upload="false" :limit="3" accept="image/*" :before-upload="beforeUpload">
             <template #trigger>
               <el-button type="primary">选择图片</el-button>
             </template>
@@ -435,6 +435,9 @@ const submitReport = async () => {
   }
 };
 
+const beforeUpload = (file) => {
+  return true;
+};
 // 更新竞赛图片列表
 const handleImageChange = (file) => {
   if (file.status === "ready") {
@@ -442,12 +445,19 @@ const handleImageChange = (file) => {
   }
 };
 
-const handleRemove = (file) => {
-  newRecord.value.photos = newRecord.value.photos.filter(
-    (photo) => photo.name !== file.name
-  );
-  console.log(newRecord.value.photos);
+const handleRemove = (file, fileList) => {
+  newRecord.value.photos = fileList; 
 };
+
+
+const formattedFileList = (files) => {
+  return files.map(file => {
+    return {
+      ...file,
+      name: file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name // 限制显示的文件名长度
+    };
+  });
+}
 
 // 处理证书上传
 const handleCaChange = (file) => {
@@ -456,10 +466,8 @@ const handleCaChange = (file) => {
   }
 };
 
-const handleCaRemove = (file) => {
-  newRecord.value.certificates = newRecord.value.certificates.filter(
-    (certificate) => certificate.name !== file.name
-  );
+const handleCaRemove = (file, fileList) => {
+  newRecord.value.certificates = fileList; 
 };
 
 // 处理凭证上传
@@ -469,10 +477,8 @@ const handlePrChange = (file) => {
   }
 };
 
-const handlePrRemove = (file) => {
-  newRecord.value.proof = newRecord.value.proof.filter(
-    (proof) => proof.name !== file.name
-  );
+const handlePrRemove = (file, fileList) => {
+  newRecord.value.proof = fileList; 
 };
 
 // 提交竞赛记录
