@@ -161,7 +161,7 @@
 
         <!-- 比赛时间 -->
         <el-form-item label="比赛时间">
-          <el-date-picker v-model="dateRange" type="daterange" format="YYYY-MM-DD" value-format="YYYY-MM-DD" start-placeholder="开始日期" end-placeholder="结束日期" @change="handleDateChange"></el-date-picker>
+          <el-date-picker v-model="dateRange" type="datetimerange" format="YYYY-MM-DD HH:mm" value-format="YYYY-MM-DD HH:mm" start-placeholder="开始日期" end-placeholder="结束日期" @change="handleDateChange"></el-date-picker>
         </el-form-item>
 
         <!-- 提交表单 -->
