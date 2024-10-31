@@ -259,13 +259,12 @@ onBeforeUnmount(() => {
 </script>
 
 
-
 <style scoped>
 .content {
-  background-image: url('@/assets/HomePage.jpg'); /* 设置背景图 */
+  background-image: url("@/assets/HomePage.jpg"); /* 设置背景图 */
   background-attachment: fixed; /* 背景图固定 */
   background-position: center; /* 背景图居中 */
-  background-repeat: no-repeat; /* 不重复背景图 */
+  background-repeat: no-repeat;
   margin: 0;
   padding: 0;
   border-radius: 10px;
@@ -279,7 +278,7 @@ onBeforeUnmount(() => {
 }
 
 .title {
-  font-size: 96px; 
+  font-size: 6vw;
   opacity: 1;
   transform: translateY(50px);
   transition: opacity 1s ease, transform 1s ease; /* 设置过渡效果 */
@@ -288,7 +287,7 @@ onBeforeUnmount(() => {
   background-clip: text;
   color: transparent;
   position: relative;
-  text-align: center; 
+  text-align: center;
   padding: 20px 0; /* 简化padding */
 }
 
@@ -300,7 +299,11 @@ onBeforeUnmount(() => {
 .flex-container {
   display: flex; /* 使用 Flexbox 布局 */
   align-items: stretch; /* 垂直方向对齐 */
-  background: radial-gradient(circle, rgba(10, 10, 10, 0) 0%, rgba(10, 10, 10, 0.5) 100%);
+  background: radial-gradient(
+    circle,
+    rgba(10, 10, 10, 0) 0%,
+    rgba(10, 10, 10, 0.5) 100%
+  );
   padding-bottom: 360px;
 }
 
@@ -317,7 +320,6 @@ onBeforeUnmount(() => {
   align-items: flex-start;
   padding: 60px;
 }
-
 
 .IntroImages {
   width: 100%;
@@ -337,14 +339,14 @@ onBeforeUnmount(() => {
 }
 
 .intro-title {
-  font-size: 48px;
-  color: #FFFFFF;
+  font-size: 3vw;
+  color: #ffffff;
   padding-bottom: 20px;
 }
 
 .intro-content {
-  font-size: 24px;
-  color: #FFFFFF;
+  font-size: 1.5vw;
+  color: #ffffff;
   padding-bottom: 20px;
 }
 
@@ -359,26 +361,104 @@ onBeforeUnmount(() => {
 }
 
 .experiment-card-title {
-  font-size: 48px;
-  color: #FFFFFF;
+  font-size: 3vw;
+  color: #ffffff;
   padding-bottom: 20px;
 }
 
 .experiment-card-content {
-  font-size: 24px;
-  color: #FFFFFF;
+  font-size: 1.5vw;
+  color: #ffffff;
   padding-bottom: 20px;
 }
 
 .footer {
+  position: fixed; /* 固定定位 */
+  bottom: 0; /* 固定在底部 */
   left: 0; /* 从左侧开始 */
   right: 0; /* 向右延展 */
   display: flex; /* 使用flexbox布局 */
   justify-content: center; /* 水平居中 */
   align-items: center; /* 垂直居中 */
-  background-color: #0A0A0A;
+  background-color: #0a0a0a;
   padding: 20px;
   color: #c9d1d9;
   text-align: center;
+}
+
+/* 小屏幕自适应效果 */
+@media (max-width: 768px) {
+  .title {
+    font-size: 48px;
+    padding: 10px 0;
+  }
+
+  .intro-title {
+    font-size: 32px; /* 缩小简介标题字体 */
+  }
+
+  .intro-content {
+    font-size: 18px; /* 缩小简介内容字体 */
+  }
+
+  .experiment-card-container {
+    flex-direction: column; /* 纵向排列 */
+    align-items: center;
+    padding: 20px; /* 缩小 padding */
+  }
+
+  .experiment-card-title {
+    font-size: 32px; /* 缩小实验卡片标题字体 */
+    padding-bottom: 10px; /* 调整间距 */
+  }
+
+  .experiment-card-content {
+    font-size: 18px; /* 缩小实验卡片内容字体 */
+    padding-bottom: 10px;
+    text-align: center; /* 调整为居中 */
+  }
+
+  .IntroImages {
+    height: auto; /* 调整图片大小 */
+    margin-bottom: 10px; /* 图片和内容之间的间距 */
+  }
+
+  .intro-container {
+    flex-direction: column; /* 改为纵向排列 */
+    align-items: center; /* 居中对齐 */
+    padding: 20px; /* 减小 padding */
+  }
+  .line {
+    display: none; /* 隐藏左侧的动画条 */
+  }
+  .footer {
+    font-size: 12px; /* 调整 footer 字体大小 */
+    padding: 10px; /* 调整 footer padding */
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 36px; /* 再次缩小标题字体 */
+  }
+  .line {
+    display: none; /* 隐藏左侧的动画条 */
+  }
+
+  .intro-title {
+    font-size: 24px; /* 缩小简介标题字体 */
+  }
+
+  .intro-content {
+    font-size: 16px; /* 缩小简介内容字体 */
+  }
+
+  .experiment-card-title {
+    font-size: 24px; /* 缩小实验卡片标题字体 */
+  }
+
+  .experiment-card-content {
+    font-size: 14px; /* 缩小实验卡片内容字体 */
+  }
 }
 </style>
