@@ -69,7 +69,7 @@
                 <el-table-column label="操作" align="center">
                   <template #default="{ row }">
                     <el-button-group>
-                      <el-button type="primary" @click="generatepdf(row.ReportID)" style = "background-color: greenyellow;">生成pdf</el-button>
+                      <el-button type="primary" @click="generatepdf(row.ReportID)" style = "background-color: green;">生成pdf</el-button>
                     </el-button-group>
                   </template>
                 </el-table-column>
@@ -103,7 +103,7 @@
                 <el-table-column label="操作" align="center">
                   <template #default="{ row }">
                     <el-button-group>
-                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
+                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">重新上传</el-button>
                     </el-button-group>
                   </template>
                 </el-table-column>
@@ -120,7 +120,7 @@
                 <el-table-column label="操作" align="center">
                   <template #default="{ row }">
                     <el-button-group>
-                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
+                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">重新上传</el-button>
                     </el-button-group>
                   </template>
                 </el-table-column>
@@ -531,11 +531,7 @@ const submitRecord = async () => {
       reportDialogVisible.value = false;
     }
   } catch (error) {
-    const errorMessage =
-      error.response && error.response.data
-        ? error.response.data.message || "上传失败!"
-        : "上传失败!";
-    ElMessage.error(errorMessage);
+    ElMessage.error(error.response?.data?.error || "上传记录失败，请稍后再试")
   }
 };
 
