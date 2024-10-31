@@ -23,9 +23,9 @@
                 </el-radio-group>
             </el-form-item>
 
-            <el-form-item>
+            <el-form-item style="display: flex; justify-content: space-between; align-items: center;">
                 <el-button :loading="loading" type="primary" @click="HandleLogin">登录</el-button>
-                <el-button @click="router.push('/register')">取消</el-button>
+                <router-link class="register-link" to="/register">没有账号？点击注册-></router-link>
             </el-form-item>
         </el-form>
     </div>
@@ -138,5 +138,13 @@ h2 {
     background: transparent;
     color: rgba(30, 144, 255, 0.8);
     border: 1px solid rgba(30, 144, 255, 0.8);
+}
+
+.register-link {
+    color: white; 
+}
+
+.register-link:hover {
+    color: yellow; 
 }
 </style>

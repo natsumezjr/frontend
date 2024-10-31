@@ -1,6 +1,6 @@
 <template>
   <div class="teacher-view">
-    <NavBar title="网络安全实验中心--教师端" isLoggedIn="true"></NavBar>
+    <NavBar title="网络安全实验中心 - 教师端" isLoggedIn="true"></NavBar>
     <el-row>
       <el-col :span="4" class="menu-col">
         <el-menu default-active="1" @select="handleSelect">

@@ -63,11 +63,9 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item>
-          <div class="button-container">
-            <el-button :loading="loading" type="primary" @click="handleRegister">注册</el-button>
-            <el-button @click="router.push('/login')">取消</el-button>
-          </div>
+        <el-form-item class="button-container">
+          <el-button :loading="loading" type="primary" @click="handleRegister">注册</el-button>
+          <el-button @click="router.push('/login')" style="color:aliceblue;">取消</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -169,9 +167,10 @@ h2 {
 }
 
 .button-container {
-  display: flex;
-  justify-content: space-between;
   margin-top: 20px;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
 }
 
 .el-button {

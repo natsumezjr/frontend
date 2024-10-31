@@ -1,6 +1,5 @@
 <template>
-  <!-- 通常会有导航栏 -->
-  <NavBar title="网络安全实验中心 - 首页" />
+  <NavBar title="网络安全实验中心 - 学生端" />
   <div class="student-view">
     <el-row>
       <el-col :span="4" class="menu-col">
@@ -11,10 +10,11 @@
       </el-col>
 
       <el-col :span="20">
-        <!-- 竞赛报备 -->
         <div v-if="activeTab === '1'" class="right-col">
-          <h2>竞赛报备</h2>
-          <el-button type="primary" @click="showReportDialog">创建报备</el-button>
+          <el-row style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 24px;">竞赛报备</h2>
+            <el-button type="primary" @click="showReportDialog" style="font-size: 18px; padding: 20px;">创建报备</el-button>
+          </el-row>
           <div>
             <el-collapse v-model="activeNamesReport">
               <el-collapse-item title="待审核 (Pending)" name="pending_report">
@@ -55,11 +55,28 @@
 
         <!-- 竞赛记录 -->
         <div v-if="activeTab === '2'" class="right-col">
-          <h2>竞赛记录</h2>
+          <h2 style="padding-bottom: 20px;">竞赛记录</h2>
           <div class="total-participation">
-            <span>竞赛总参与数: {{ totalParticipationCount }}</span>
+            <span style="font-size: 16px;">有效的竞赛记录: {{ totalParticipationCount }}</span>
           </div>
           <el-collapse v-model="activeNamesRecord">
+            <el-collapse-item title="已批准 (Approved)" name="approved_record">
+              <el-table v-if="filteredRecords.approved.length" :data="filteredRecords.approved" style="width: 100%">
+                <el-table-column prop="name" label="比赛名"></el-table-column>
+                <el-table-column prop="level" label="比赛级别"></el-table-column>
+                <el-table-column prop="report_date" label="提交时间"></el-table-column>
+                <el-table-column prop="status" label="审核状态"></el-table-column>
+                <el-table-column label="操作" align="center">
+                  <template #default="{ row }">
+                    <el-button-group>
+                      <el-button type="primary" @click="generatepdf(row.ReportID)" style = "background-color: greenyellow;">生成pdf</el-button>
+                    </el-button-group>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div v-else>无已批准记录</div>
+            </el-collapse-item>
+                        
             <el-collapse-item title="记录待上传 (Waiting)" name="waiting_record">
               <el-table v-if="filteredRecords.waiting.length" :data="filteredRecords.waiting" style="width: 100%">
                 <el-table-column prop="name" label="比赛名"></el-table-column>
@@ -92,23 +109,6 @@
                 </el-table-column>
               </el-table>
               <div v-else>无待审核记录</div>
-            </el-collapse-item>
-
-            <el-collapse-item title="已批准 (Approved)" name="approved_record">
-              <el-table v-if="filteredRecords.approved.length" :data="filteredRecords.approved" style="width: 100%">
-                <el-table-column prop="name" label="比赛名"></el-table-column>
-                <el-table-column prop="level" label="比赛级别"></el-table-column>
-                <el-table-column prop="report_date" label="提交时间"></el-table-column>
-                <el-table-column prop="status" label="审核状态"></el-table-column>
-                <el-table-column label="操作" align="center">
-                  <template #default="{ row }">
-                    <el-button-group>
-                      <el-button type="primary" @click="showRecordDialog(row.ReportID)">上传记录</el-button>
-                    </el-button-group>
-                  </template>
-                </el-table-column>
-              </el-table>
-              <div v-else>无已批准记录</div>
             </el-collapse-item>
 
             <el-collapse-item title="已拒绝 (Rejected)" name="rejected_record">
@@ -283,10 +283,6 @@ const getCSRFToken = async () => {
 /** 排序相关 */
 const sortProp = ref("report_date");
 const sortOrder = ref("descending");
-const handleSortChange = ({ prop, order }) => {
-  sortProp.value = prop; // 更新排序属性
-  sortOrder.value = order; // 更新排序顺序
-};
 
 const sortedReports = computed(() => {
   return [...reports.value].sort((a, b) => {
@@ -323,9 +319,11 @@ const handleDateChange = (value) => {
   newReport.value.competition_end = value[1]; // 获取结束日期
 };
 
+// 计算参赛数量
 const totalParticipationCount = computed(() => {
-  return records.value.length; // 计算记录的总数
+  return records.value.filter(record => record.status === "approved_record").length; 
 });
+
 
 
 // 显示创建报备弹窗
