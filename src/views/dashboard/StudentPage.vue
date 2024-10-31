@@ -281,9 +281,7 @@ const getCSRFToken = async () => {
 };
 
 /** 排序相关 */
-const sortProp = ref("report_date");
 const sortOrder = ref("descending");
-
 const sortedReports = computed(() => {
   return [...reports.value].sort((a, b) => {
     const dateA = new Date(a.report_date).getTime(); 
