@@ -39,6 +39,32 @@
       </el-container>
     </div>
 
+    <div class="flex-container">
+      <SecondLine class="line" />
+      <el-container class="experiment-card-container">
+        <el-header>
+          <h2 class="experiment-card-title">靶场展示</h2>
+        </el-header>
+        <el-main>
+          <p class="experiment-card-content">优秀的靶场只需要简单的烹饪方式------在线实验平台，学生可以随时随地进行实验。</p>
+          <el-card class="experiment-card" shadow="hover" v-for="(card, index) in ExperimentCards" :key="index"></el-card>
+        </el-main>
+      </el-container>
+    </div>
+
+    <div class="flex-container">
+      <SecondLine class="line" />
+      <el-container class="experiment-card-container">
+        <el-header>
+          <h2 class="experiment-card-title">荣誉墙</h2>
+        </el-header>
+        <el-main>
+          <p class="experiment-card-content">荣誉墙：展示学生在实验中取得的成果，展示实验平台的优秀实验环境，激励学生不断学习，不断进步。</p>
+          <el-card class="experiment-card" shadow="hover" v-for="(card, index) in ExperimentCards" :key="index"></el-card>
+        </el-main>
+      </el-container>
+    </div>
+
 
   </div>
       
