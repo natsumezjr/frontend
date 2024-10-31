@@ -373,8 +373,6 @@ onBeforeUnmount(() => {
 }
 
 .footer {
-  position: fixed; /* 固定定位 */
-  bottom: 0; /* 固定在底部 */
   left: 0; /* 从左侧开始 */
   right: 0; /* 向右延展 */
   display: flex; /* 使用flexbox布局 */
